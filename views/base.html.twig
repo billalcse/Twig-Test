@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% block head %}
+        <link rel="stylesheet" href="http://wneedsprojects.com/twig-test/assets/bootstrap/css/bootstrap.css" />
+        <title>{% block title %}{% endblock %} - My Webpage</title>
+    {% endblock %}
+</head>
+<body>
+<div id="header" style="background-color: #00008b; color: #ffffff; height: 50px;">{% block header %} <h2 style="text-align: center;">welcome to the facebook page</h2> {% endblock %}</div>
+<div id="content">{% block content %}{% endblock %}</div>
+<div id="footer" style="text-align: center; background-color: #000000;color: #ffffff; height: 30px;">
+    {% block footer %}
+        &copy; Copyright 2014 by <a href="http://billalcse.wordpress.com/">Billal Hossain</a>.
+    {% endblock %}
+</div>
+</body>
+</html>

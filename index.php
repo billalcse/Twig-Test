@@ -2,11 +2,15 @@
     <head>
         <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.css" />
         <script type="text/javascript" src="assets/bootstrap/js/bootstrap.min.js"></script>
+        <style type="text/css">
+            #graphForm {
+                margin: 30px;
+            }
+        </style>
     </head>
     <body>
         <div style="width: 900px; height: 500px; text-align: center; vertical-align: middle;">
 
-            <button type="button" class="btn btn-default">Default</button>
             <form id="graphForm" action="app.php" method="post">
 
                 <div style="float: left;">
@@ -14,7 +18,7 @@
                 </div>
 
                 <div style="float: left;">
-                    <input type="submit" name="submit" value="submit"/>
+                    <input type="submit" name="submit" class="btn btn-primary" value="submit"/>
                 </div>
 
                 <input type="hidden" name="pagename" value="index"/>

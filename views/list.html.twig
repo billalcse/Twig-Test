@@ -1,20 +1,43 @@
-<html>
-<head>
-    <link rel="stylesheet" href="http://wneedsprojects.com/twig-test/assets/bootstrap/css/bootstrap.css" />
-    <script type="text/javascript" src="http://wneedsprojects.com/twig-test/assets/bootstrap/js/bootstrap.min.js"></script>
-</head>
-<body>
-<h3 style="color: green;">Your Facebook Information Succesfully inserted</h3>
-<table class="table table-bordered"><thead><tr><th>#</th><th>Facebook ID</th><th>Full Name</th><th>Username</th><th>Gender</th><th>Facebook Link</th><th>Action</th></tr></thead>
+{% extends "base.html.twig" %}
 
-</table>
+{% block title %}Index{% endblock %}
+{% block head %}
+    {{ parent() }}
+    <style type="text/css">
+        .important { color: #336699; }
+        #graphForm {
+            margin-left: 30px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <h4 style="text-align: center; font-weight: bold;">{{ msg }}</h4>
+    <h3 style="color: #000000;font-weight: bold; text-align: center;">Your Facebook User List</h3>
+    <table class="table table-bordered"><thead><tr><th>#</th><th>Facebook ID</th><th>Full Name</th><th>Username</th><th>Gender</th><th>Number of Friend</th><th>Facebook Link</th><th>Action</th></tr></thead>
+       {% set i =1 %}
+        {% for users in userList %}
+           <tr>
+               <td>{{ i }}</td>
+                <td>{{ users.fb_id}}</td>
+                <td>{{ users.name}}</td>
+                <td>{{ users.username}}</td>
+                <td>{{ users.gender}}</td>
+                <td>{{ users.friend_count}}</td>
+                <td><a href="{{ users.fb_link }}" target="_blank">{{ users.fb_link}}</a></td>
+                <td><a onclick="return confirm('Are you sure to delete this Member?')" href="http://wneedsprojects.com/twig-test/app.php?deletedId={{ users.id }}">Delete</a></td>
+           </tr>
+            {% set i=i+1 %}
+       {% endfor %}
 
-{#<p>Facebook ID:{{id}}</p>#}
-{#<p>Name:{{name}}</p>#}
-{#<p>Gender:{{gender}}</p>#}
-{#<p>Username:{{username}}</p>#}
-{#<p>Facebook Link:{{link}}</p>#}
-{#<p>Meta Data:{{meta}}</p>#}
-<button type="button" class="btn btn-primary"><a href="http://wneedsprojects.com/twig-test/" style="color: #000000;">Add New</a></button>
-</body>
-</html>
+    </table>
+
+    {#<p>Facebook ID:{{id}}</p>#}
+    {#<p>Name:{{name}}</p>#}
+    {#<p>Gender:{{gender}}</p>#}
+    {#<p>Username:{{username}}</p>#}
+    {#<p>Facebook Link:{{link}}</p>#}
+    {#<p>Meta Data:{{meta}}</p>#}
+    <button type="button" class="btn btn-primary"><a href="http://wneedsprojects.com/twig-test/" style="color: #000000;">Add New</a></button>
+
+
+{% endblock %}

@@ -22,8 +22,18 @@ global $db;
 
 
     } else {
+        $uri = $_SERVER['REQUEST_URI'];
+        $sd = explode('=',$uri);
+        $tr = explode('?',$sd[0]);
+
+         if ($tr[1]='deletedId'){
+             $control = new Control($twig, $db);
+             $control->deleteUser($sd[1]);
+
+         } else {
 
         header('Location: index.php');
+         }
     }
 
 
@@ -51,29 +61,30 @@ class Control
         $data =json_decode($homepage,1);
         $id = $data['id'];
         $name = $data['name'];
-
+        $fb_friend = file_get_contents('https://graph.facebook.com/fql?q=SELECT%20friend_count%20FROM%20user%20WHERE%20uid='.$data['id']);
+        $friend_data =json_decode($fb_friend,1);
         if(!empty($data['gender'])){
         $gender = $data['gender'];
         } else {
         $gender = '';
         }
+
+        if(!empty($friend_data['data'][0]['friend_count'])){
+            $friend_count = $friend_data['data'][0]['friend_count'];
+        } else {
+            $friend_count = 0;
+        }
         //print_r($gender); exit;
         $username = $data['username'];
-        $link = 'http://graph.facebook.com/'.$data['username'];
+        $link = 'http://facebook.com/'.$data['username'];
         unset($data['id']);
         unset($data['name']);
         unset($data['gender']);
         unset($data['username']);
         unset($data['link']);
         $meta = json_encode($data);
-        //echo $homepage;
-        //print_r($homepage->id); exit;
-        // get data from url
-
-        // build data to show
-
         // render twig
-        $this->view('add.html.twig', array('id' => $id, 'name' => $name, 'gender' => $gender, 'username' => $username, 'link' => $link, 'meta' => $meta));
+        $this->view('add.html.twig', array('id' => $id, 'name' => $name, 'gender' => $gender, 'username' => $username, 'link' => $link, 'friend_count' =>$friend_count, 'meta' => $meta));
 
     }
 
@@ -86,35 +97,48 @@ class Control
        // print_r($gender); exit;
         $username = $postData['username'];
         $fb_link = $postData['fb_link'];
+        $friend_count = $postData['friend_count'];
         $meta = addslashes($postData['meta']);
-        //$sql = "select * from "
-        $sql = "INSERT INTO fb_graph VALUES ('','$fb_id', '$name', '$gender', '$username', '$fb_link','$meta')";
+
+        $sql = "INSERT INTO fb_graph VALUES ('','$fb_id', '$name', '$gender', $friend_count, '$username', '$fb_link','$meta')";
         //print_r($sql); exit;
         $result = mysql_query($sql, $this->dbConn);
 
         // break into data insert query
 
         // save using $this->dbConn
-        $this->showList();
+        $msg ="Facebook Information successfully inserted";
+        $this->showList($msg);
        // $this->view('list.html.twig', array('id' => $fb_id, 'name' => $name, 'gender' => $gender, 'username' => $username, 'link' => $fb_link, 'meta' => $meta));
         // redirect to list page
 
     }
 
-    public function showList()
+    public function showList($msg='')
     {
         // fetch list
         $sql = "select * from fb_graph";
 
         $result = mysql_query($sql, $this->dbConn);
-        while($row = mysql_fetch_assoc($result)) {
-            print_r($row);
+        while($row = mysql_fetch_assoc($result)){
+            $list[]=$row;
         }
-
-         exit;
-
+     //   print_r($list);
+        // exit;
         // show list
-        $this->view('list.html.twig', array());
+        $this->view('list.html.twig', array('userList'=>$list,'msg'=>$msg));
+    }
+
+
+    public function deleteUser($id)
+    {
+        // fetch list
+        $sql = "delete from fb_graph where id =".$id;
+
+        $result = mysql_query($sql, $this->dbConn);
+        // show list
+        $msg = "Facebook user successfully deleted";
+        $this->showList($msg);
     }
 
     public function view($template, $data)
