@@ -14,9 +14,9 @@ global $db;
 
         switch ($_POST['pagename']) {
 
-            case 'index'   : $control->showDetails($_POST); break;
+            case 'index'   : $control->showForm($_POST); break;
 
-            case 'details' : $control->save($_POST); break;
+            case 'add' : $control->save($_POST); break;
 
         }
 
@@ -43,7 +43,7 @@ class Control
         $this->dbConn      = $conn;
     }
 
-    public function showDetails($postdata)
+    public function showForm($postdata)
     {
         // read url
         $fbusername = $postdata['fb_username'];
@@ -51,7 +51,13 @@ class Control
         $data =json_decode($homepage,1);
         $id = $data['id'];
         $name = $data['name'];
+
+        if(!empty($data['gender'])){
         $gender = $data['gender'];
+        } else {
+        $gender = '';
+        }
+        //print_r($gender); exit;
         $username = $data['username'];
         $link = 'http://graph.facebook.com/'.$data['username'];
         unset($data['id']);
@@ -67,7 +73,7 @@ class Control
         // build data to show
 
         // render twig
-        $this->view('details.html.twig', array('id' => $id, 'name' => $name, 'gender' => $gender, 'username' => $username, 'link' => $link, 'meta' => $meta));
+        $this->view('add.html.twig', array('id' => $id, 'name' => $name, 'gender' => $gender, 'username' => $username, 'link' => $link, 'meta' => $meta));
 
     }
 
@@ -76,19 +82,21 @@ class Control
         //print_r($postData); exit;
         $fb_id = $postData['fb_id'];
         $name = $postData['name'];
-        $gender = $postData['gender'];
+        $gender = str_replace(' ', '', $postData['gender']);
+       // print_r($gender); exit;
         $username = $postData['username'];
         $fb_link = $postData['fb_link'];
-        $meta = $postData['meta'];
+        $meta = addslashes($postData['meta']);
         //$sql = "select * from "
-        $sql = "INSERT INTO fb_graph VALUES ($fb_id, '$name', '$gender', '$username', '$fb_link','$meta')";
-
+        $sql = "INSERT INTO fb_graph VALUES ('','$fb_id', '$name', '$gender', '$username', '$fb_link','$meta')";
+        //print_r($sql); exit;
         $result = mysql_query($sql, $this->dbConn);
 
         // break into data insert query
 
         // save using $this->dbConn
-        $this->view('list.html.twig', array('id' => $fb_id, 'name' => $name, 'gender' => $gender, 'username' => $username, 'link' => $fb_link, 'meta' => $meta));
+        $this->showList();
+       // $this->view('list.html.twig', array('id' => $fb_id, 'name' => $name, 'gender' => $gender, 'username' => $username, 'link' => $fb_link, 'meta' => $meta));
         // redirect to list page
 
     }
@@ -96,8 +104,17 @@ class Control
     public function showList()
     {
         // fetch list
+        $sql = "select * from fb_graph";
+
+        $result = mysql_query($sql, $this->dbConn);
+        while($row = mysql_fetch_assoc($result)) {
+            print_r($row);
+        }
+
+         exit;
 
         // show list
+        $this->view('list.html.twig', array());
     }
 
     public function view($template, $data)

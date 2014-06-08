@@ -1,9 +1,12 @@
 <html lang="en">
     <head>
-
+        <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.css" />
+        <script type="text/javascript" src="assets/bootstrap/js/bootstrap.min.js"></script>
     </head>
     <body>
         <div style="width: 900px; height: 500px; text-align: center; vertical-align: middle;">
+
+            <button type="button" class="btn btn-default">Default</button>
             <form id="graphForm" action="app.php" method="post">
 
                 <div style="float: left;">
